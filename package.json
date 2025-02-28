@@ -1,0 +1,42 @@
+{
+  "name": "zahl_des_tages",
+  "version": "1.0.0",
+  "description": "Choose random numbers in class",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bubens/Zahl_des_Tages.git"
+  },
+  "keywords": [
+    "random",
+    "numbers",
+    "number",
+    "of",
+    "the",
+    "day",
+    "classroom",
+    "maths",
+    "Unterricht",
+    "Zahl",
+    "des",
+    "Tages"
+  ],
+  "author": "Henning Beyer",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/bubens/Zahl_des_Tages/issues"
+  },
+  "homepage": "https://github.com/bubens/Zahl_des_Tages#readme",
+  "dependencies": {
+    "jquery": "^3.7.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32",
+    "browserify": "^17.0.1",
+    "terser": "^5.39.0",
+    "typescript": "^5.8.2"
+  }
+}

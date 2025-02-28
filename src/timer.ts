@@ -1,29 +1,54 @@
-import "./jquery.js";
+export interface Options {
+  color: string,
+  background: string,
+  border: string,
+  size: number
+};
 
-export const createTimer = (elem, opts = {}) => {
-  const presets = {
+export interface Timer {
+  start: (duration: number, callback: (() => any), started?: number) => void,
+  options: Options,
+  canvas: HTMLCanvasElement,
+  context: CanvasRenderingContext2D
+};
+
+export const create = (elem: string, opts?: Options): Timer => {
+  const presets: Options = {
     color: "#ff0000",
     background: "#8A8A8A",
     border: "#000",
     size: 200,
   };
 
-  if (!window.jQuery) {
-    throw new Error("Timer needs jQuery to run!");
+  const options = opts === undefined
+    ? presets
+    : { ...presets, ...opts };
+
+  const canvas = document.createElement("canvas");
+  canvas.width = options.size;
+  canvas.height = options.size;
+  canvas.style.width = options.size + "px";
+  canvas.style.height = options.size + "px";
+
+  const context = canvas.getContext("2d");
+
+  if (context === null) {
+    throw new Error("Missing context for canvas.");
   }
 
-  const options = { ...presets, ...opts };
+  const element = <HTMLElement>document.querySelector(elem);
 
-  const canvas = $("<canvas>", {
-    width: options.size,
-    height: options.size,
-  }).prop({ width: options.size, height: options.size });
+  if (!element) {
+    throw new Error("No element to selector '" + elem + "'");
+  }
+  else {
+    element.style.width = options.size + "px";
+    element.style.height = options.size + "px";
+    element.innerHTML = "";
+    element.appendChild(canvas);
+  }
 
-  const context = canvas[0].getContext("2d");
-
-  $(elem).width(options.size).height(options.size).empty().append(canvas);
-
-  const start = (duration, callback, started = -1) => {
+  const start = (duration: number, callback: (() => any), started: number = -1): void => {
     if (started === -1) {
       drawTimer(1);
       requestAnimationFrame(() => start(duration, callback, +new Date()));
@@ -39,12 +64,16 @@ export const createTimer = (elem, opts = {}) => {
     }
   };
 
-  const drawTimer = (ratio) => {
+  const drawTimer = (ratio: number) => {
     const center = options.size / 2;
     const fullCircle = Math.PI * 2;
     const radius = center - 2;
 
-    ratio = ratio < 0 ? 0 : ratio > 1 ? 1 : ratio;
+    ratio = ratio < 0
+      ? 0
+      : ratio > 1
+        ? 1
+        : ratio;
 
     context.fillStyle = options.color;
     context.beginPath();

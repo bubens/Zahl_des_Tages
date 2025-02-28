@@ -1,12 +1,26 @@
-// @ts-check
-// @ts-ignore
+import "jquery";
+import * as audioTrigger from "./audioTrigger.js";
+import * as Timer from "./timer.js";
+import * as Random from "./elmish-random.js";
 
-import "./jquery.js";
-import { createSound } from "./audio.js";
-import { createTimer } from "./timer.js";
-import {int} from  "./elmish-random.js";
+interface State {
+  running: boolean,
+  timerRunning: boolean,
+  timerDuration: number,
+  minimum: number,
+  maximum: number,
+  readNumber: boolean,
+  playAudio: boolean,
+  divider: string
+}
 
-const saveData = (key, data) => {
+interface GeneratorOutput {
+  number: number,
+  string: string
+}
+
+
+const saveData = <A>(key: string, data: A): boolean => {
   const dataStr = JSON.stringify(data);
   try {
     localStorage.setItem(key, dataStr);
@@ -16,22 +30,21 @@ const saveData = (key, data) => {
   }
 };
 
-const loadData = (key) => {
+const loadData = <A>(key: string, defaultValue: A): A => {
   const data = localStorage.getItem(key);
   if (data === null) {
-    return undefined;
+    return defaultValue;
   } else {
     try {
-      const dataJSON = JSON.parse(data);
+      const dataJSON = <A>JSON.parse(data);
       return dataJSON;
     } catch (e) {
-      return undefined;
+      return defaultValue;
     }
   }
 };
 
 async function wrap() {
-  const print = console.log;
 
   const storageKeys = {
     minimum: "RANGE_MINIMUM",
@@ -48,26 +61,29 @@ async function wrap() {
     audioTimer: "../Audio/Timer_over.ogg",
   };
 
-  const state = {
+  const state: State = {
     running: false,
     timerRunning: false,
-    timerDuration: loadData(storageKeys.timerDuration) || 120,
-    minimum: loadData(storageKeys.minimum) || 1000,
-    maximum: loadData(storageKeys.maximum) || 100000,
-    readNumber: loadData(storageKeys.readNumber),
-    playAudio: loadData(storageKeys.playAudio),
-    divider: loadData(storageKeys.divider),
+    timerDuration: loadData(storageKeys.timerDuration, 120),
+    minimum: loadData(storageKeys.minimum, 1000),
+    maximum: loadData(storageKeys.maximum, 100000),
+    readNumber: loadData(storageKeys.readNumber, true),
+    playAudio: loadData(storageKeys.playAudio, true),
+    divider: loadData(storageKeys.divider, "."),
   };
 
   const display = $("#number");
-  display.show = (txt) => display.text(txt);
+  const print = ((obj: JQuery<HTMLElement>) => (text: string): boolean => {
+    obj.text(text);
+    return true;
+  })(display);
 
   const synth = window.speechSynthesis;
   const voice = synth.getVoices().filter((v) => v.lang === "de-DE")[0];
 
-  const buildGenerator = ({ minimum, maximum }) => {
+  const buildGenerator = ({ minimum, maximum }: State): Random.Generator<GeneratorOutput> => {
     const padding = (maximum + "").length;
-    return int(minimum, maximum, Math.random).map((x) => {
+    return Random.int(minimum, maximum, Math.random).map((x) => {
       let arr = (x + "").split("").reverse();
       for (let i = 0; i < arr.length; i += 3) {
         arr[i] = i > 0 ? arr[i] + state.divider : arr[i];
@@ -79,12 +95,13 @@ async function wrap() {
     });
   };
 
-  const timeouts = [
+  const timeouts: number[] = [
     10, 20, 30, 40, 50, 80, 100, 130, 160, 210, 260, 310, 390, 470, 550, 650,
     750, 850, 1000, 1150, 1300, 1600, 1900, 2200, 2700, 3200, 3700, 4500,
   ];
   //const timeouts = [100, 200];
-  const timer = createTimer("#timer", {
+
+  const timer = Timer.create("#timer", {
     size: 360,
     color: "#FFA07A ",
     background: "#292929",
@@ -92,38 +109,38 @@ async function wrap() {
   });
 
   /* AUDIO */
-  let gongSound = await createSound(URLs.audioGong);
-  let clickSound = await createSound(URLs.audioClick);
-  let timerSound = await createSound(URLs.audioTimer);
+  let gongSound = await audioTrigger.create(URLs.audioGong);
+  let clickSound = await audioTrigger.create(URLs.audioClick);
+  let timerSound = await audioTrigger.create(URLs.audioTimer);
 
   /* AUDIO END */
 
   const roll = (event) => {
     const rndGenerator = buildGenerator(state);
 
-    display
-      .removeClass("ready")
-      .addClass("rolling")
-      .show(rndGenerator.next().string);
+    display.removeClass("ready").addClass("rolling");
+    print(rndGenerator.next().string);
+
 
     timeouts.forEach((t) => {
       window.setTimeout(() => {
         const x = rndGenerator.next();
         clickSound.trigger(state.playAudio);
         //console.log(x);
-        display.show(x.string);
+        print(x.string);
       }, t);
     });
     state.running = true;
 
     setTimeout(() => {
       const finalNumber = rndGenerator.next();
-      display.addClass("ready").removeClass("rolling").show(finalNumber.string);
+      display.addClass("ready").removeClass("rolling");
+      print(finalNumber.string);
 
       gongSound.trigger(state.playAudio);
 
       if (state.readNumber) {
-        const spokenNumber = new SpeechSynthesisUtterance(finalNumber.number);
+        const spokenNumber = new SpeechSynthesisUtterance(finalNumber.number + "");
         spokenNumber.voice = voice;
         window.setTimeout(
           () => synth.speak(spokenNumber),
@@ -153,7 +170,7 @@ async function wrap() {
     //console.log(timer);
   };
 
-  const saveRange = (minimum, maximum) => {
+  const saveRange = (minimum: number, maximum: number): boolean => {
     saveData(storageKeys.minimum, minimum);
     saveData(storageKeys.maximum, maximum);
 
@@ -163,33 +180,33 @@ async function wrap() {
     return true;
   };
 
-  const numberize = (value) => {
+  const numberize = <A>(value: A | A[]): number => {
     if (Array.isArray(value)) {
-        return numberize(value[0]);
+      return numberize(value[0]);
     }
-    else if (!isNaN(value) && typeof value === "number") {
-        return value;
+    else if (typeof value === "number" && !isNaN(value)) {
+      return value;
     }
-    else  {
-        return parseInt(value, 10)
+    else if (typeof value === "string") {
+      return parseInt(value, 10)
+    }
+    else {
+      return NaN;
     }
   };
   const checkRange = () => {
-    
-    
+
     const minimum = numberize($("#range_from").val());
     const maximum = numberize($("#range_to").val());
 
     if (!isNaN(minimum) && !isNaN(maximum) && minimum < maximum) {
-      saveRange(minimum, maximum);
-      //console.log("Range saved: %i to %i", minimum, maximum);
-      return true;
+      return saveRange(minimum, maximum);
     } else {
       return false;
     }
   };
 
-  const toggleSettings = (onscreen) => {
+  const toggleSettings = (onscreen: boolean): boolean => {
     if (onscreen && checkRange()) {
       $("#range_from, #range_to").removeClass("invalid_input");
       $("#settings, #settings_filler, #settings_toggle").animate(
@@ -215,7 +232,7 @@ async function wrap() {
     return true;
   };
 
-  const adjustStyles = () => {
+  const adjustStyles = (): void => {
     console.log("Resizing Settings Panel");
     $("#settings")
       // @ts-ignore

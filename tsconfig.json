@@ -9,5 +9,8 @@
         "include": [
             "jquery"
         ]
-    }
+    },
+    "include": [
+        "src/*"
+    ]
 }

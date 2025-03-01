@@ -1,7 +1,7 @@
-import "jquery";
+import * as $ from "jquery";
 import * as audioTrigger from "./audioTrigger";
 import * as Timer from "./timer";
-import * as Random from "./elmish-random";
+import * as Random from "./elmishRandom";
 import * as Utils from "./utils";
 
 interface State {
@@ -32,9 +32,9 @@ async function wrap() {
   };
 
   const URLs = {
-    audioClick: "../Audio/Click.ogg",
-    audioGong: "../Audio/Number_found.ogg",
-    audioTimer: "../Audio/Timer_over.ogg",
+    audioClick: "./Click.ogg",
+    audioGong: "./Number_found.ogg",
+    audioTimer: "./Timer_over.ogg",
   };
 
   const state: State = {

@@ -1,46 +1,54 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="src/style.css">
-	<!--<script type="module" src="src/jquery.js"></script>
-	<script type="module" src="src/elmish-random.js"></script>
-	<script type="module" src="src/timer.js"></script>
-	<script type="module" src="src/audio.js"></script>-->
+	<link
+		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Victor+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
 	<style>
-	
-	
-	
+
+
+
 	</style>
 </head>
+
 <body>
-<h1 class="bebas-neue-regular">Die Zahl des Tages ist...</h1>
-<div id="number" class="victor-mono">Leertaste drücken!</div>
+	<h1 class="bebas-neue-regular">Die Zahl des Tages ist...</h1>
+	<div id="number" class="victor-mono">Leertaste drücken!</div>
 
-<div id="timer"> </div>
+	<div id="timer"> </div>
 
-<div class="bebas-neue-regular" id="settings_toggle"><a href="javascript:void(0);">&#9881;</a></div>
-<div class="bebas-neue-regular" id="settings">
-	<h2>Einstellungen</h2>
-	<div>Von <input class="settings_input bebas-neue-regular" id="range_from" type="number" value="1" min="0" max="999999999" step="1"> bis <input class="settings_input bebas-neue-regular" id="range_to" type="number" value="100" min="0" max="999999999" step="1"></div>
-	<div><input name="read_number" class="settings_input" id="read_number" type="checkbox" checked="checked"><label for="read_number">Zahl vorlesen!</label></div>
-	<div><input name="play_audio" class="settings_input" id="play_audio" type="checkbox" checked="checked"><label for="play_audio">Sound abspielen!</label></div>
-	<div><label for="timer_duration">Rechenzeit:</label> <input name="timer_duration" class="settings_input bebas-neue-regular" id="timer_duration" type="number" value="120" min="1" max="9999" step="10"> Sekunden</div>
-	<div>Trennzeichen:
-		<select id="select_divider">
-			<option value=".">.</option>
-			<option value=",">,</option>
-			<option value=" ">Leerzeichen</option>
-			<option value="">Ohne</option>
-			<option value="custom">Eigenes:</option>
-		<select><br>
-		<label for="custom_divider">Eigenes Trennzeichen:</label> <input name="custom_divider" class="settings_input" id="custom_divider" type="text" size="1" value="">
+	<div class="bebas-neue-regular" id="settings_toggle"><a href="javascript:void(0);">&#9881;</a></div>
+	<div class="bebas-neue-regular" id="settings">
+		<h2>Einstellungen</h2>
+		<div>Von <input class="settings_input bebas-neue-regular" id="range_from" type="number" value="1" min="0"
+				max="999999999" step="1"> bis <input class="settings_input bebas-neue-regular" id="range_to"
+				type="number" value="100" min="0" max="999999999" step="1"></div>
+		<div><input name="read_number" class="settings_input" id="read_number" type="checkbox" checked="checked"><label
+				for="read_number">Zahl vorlesen!</label></div>
+		<div><input name="play_audio" class="settings_input" id="play_audio" type="checkbox" checked="checked"><label
+				for="play_audio">Sound abspielen!</label></div>
+		<div><label for="timer_duration">Rechenzeit:</label> <input name="timer_duration"
+				class="settings_input bebas-neue-regular" id="timer_duration" type="number" value="120" min="1"
+				max="9999" step="10"> Sekunden</div>
+		<div>Trennzeichen:
+			<select id="select_divider">
+				<option value=".">.</option>
+				<option value=",">,</option>
+				<option value=" ">Leerzeichen</option>
+				<option value="">Ohne</option>
+				<option value="custom">Eigenes:</option>
+				<select><br>
+					<label for="custom_divider">Eigenes Trennzeichen:</label> <input name="custom_divider"
+						class="settings_input" id="custom_divider" type="text" size="1" value="">
+		</div>
+
 	</div>
-		
-</div>
-<div id="settings_filler"> </div>
-<script type="module" src="src/index.js"></script>
+	<div id="settings_filler"> </div>
+	<script type="module" src="app.min.js"></script>
 </body>
+
 </html>

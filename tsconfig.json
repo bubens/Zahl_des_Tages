@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "outDir": "tmp",
+        "alwaysStrict": true,
+        "module": "CommonJS",
+        "target": "ES2017"
+    },
+    "typeAcquisition": {
+        "include": [
+            "jquery"
+        ]
+    }
+}

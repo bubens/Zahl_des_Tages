@@ -1,8 +1,8 @@
 {
   "name": "zahl_des_tages",
   "version": "1.0.0",
-  "description": "Choose random numbers in class",
-  "main": "index.js",
+  "description": "Chooses random numbers for you and your students.",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,16 +13,7 @@
   "keywords": [
     "random",
     "numbers",
-    "number",
-    "of",
-    "the",
-    "day",
-    "classroom",
-    "maths",
-    "Unterricht",
-    "Zahl",
-    "des",
-    "Tages"
+    "classroom"
   ],
   "author": "Henning Beyer",
   "license": "GPL-3.0-or-later",

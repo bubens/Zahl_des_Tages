@@ -1,7 +1,8 @@
 import "jquery";
-import * as audioTrigger from "./audioTrigger.js";
-import * as Timer from "./timer.js";
-import * as Random from "./elmish-random.js";
+import * as audioTrigger from "./audioTrigger";
+import * as Timer from "./timer";
+import * as Random from "./elmish-random";
+import * as Utils from "./utils";
 
 interface State {
   running: boolean,
@@ -18,31 +19,6 @@ interface GeneratorOutput {
   number: number,
   string: string
 }
-
-
-const saveData = <A>(key: string, data: A): boolean => {
-  const dataStr = JSON.stringify(data);
-  try {
-    localStorage.setItem(key, dataStr);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-const loadData = <A>(key: string, defaultValue: A): A => {
-  const data = localStorage.getItem(key);
-  if (data === null) {
-    return defaultValue;
-  } else {
-    try {
-      const dataJSON = <A>JSON.parse(data);
-      return dataJSON;
-    } catch (e) {
-      return defaultValue;
-    }
-  }
-};
 
 async function wrap() {
 
@@ -64,12 +40,12 @@ async function wrap() {
   const state: State = {
     running: false,
     timerRunning: false,
-    timerDuration: loadData(storageKeys.timerDuration, 120),
-    minimum: loadData(storageKeys.minimum, 1000),
-    maximum: loadData(storageKeys.maximum, 100000),
-    readNumber: loadData(storageKeys.readNumber, true),
-    playAudio: loadData(storageKeys.playAudio, true),
-    divider: loadData(storageKeys.divider, "."),
+    timerDuration: Utils.loadData(storageKeys.timerDuration, 120),
+    minimum: Utils.loadData(storageKeys.minimum, 1000),
+    maximum: Utils.loadData(storageKeys.maximum, 100000),
+    readNumber: Utils.loadData(storageKeys.readNumber, true),
+    playAudio: Utils.loadData(storageKeys.playAudio, true),
+    divider: Utils.loadData(storageKeys.divider, "."),
   };
 
   const display = $("#number");
@@ -171,8 +147,8 @@ async function wrap() {
   };
 
   const saveRange = (minimum: number, maximum: number): boolean => {
-    saveData(storageKeys.minimum, minimum);
-    saveData(storageKeys.maximum, maximum);
+    Utils.saveData(storageKeys.minimum, minimum);
+    Utils.saveData(storageKeys.maximum, maximum);
 
     state.minimum = minimum;
     state.maximum = maximum;
@@ -256,13 +232,13 @@ async function wrap() {
   $("#read_number").on("change", (e) => {
     const checked = $(e.target).is(":checked");
     state.readNumber = checked;
-    saveData(storageKeys.readNumber, checked);
+    Utils.saveData(storageKeys.readNumber, checked);
   });
 
   $("#play_audio").on("change", (e) => {
     const checked = $(e.target).is(":checked");
     state.playAudio = checked;
-    saveData(storageKeys.playAudio, checked);
+    Utils.saveData(storageKeys.playAudio, checked);
   });
 
   $("#timer_duration").on("change", (e) => {
@@ -270,7 +246,7 @@ async function wrap() {
     const value = parseInt(target.prop("value"), 10);
     if (!isNaN(value)) {
       state.timerDuration = value;
-      saveData(storageKeys.timerDuration, value);
+      Utils.saveData(storageKeys.timerDuration, value);
     } else {
       target.addClass("invalid_input");
     }
@@ -287,14 +263,14 @@ async function wrap() {
     } else {
       $("#custom_divider, label[for='custom_divider']").css("display", "none");
       state.divider = value;
-      saveData(storageKeys.divider, value);
+      Utils.saveData(storageKeys.divider, value);
     }
   });
 
   $("#custom_divider").on("input", (e) => {
     const value = $(e.target).prop("value");
     state.divider = value;
-    saveData(storageKeys.divider, value);
+    Utils.saveData(storageKeys.divider, value);
   });
 
   $(() => {

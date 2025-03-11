@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.32",
     "browserify": "^17.0.1",
+    "html-validate": "^9.5.0",
     "terser": "^5.39.0",
     "typescript": "^5.8.2"
   }

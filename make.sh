@@ -9,9 +9,10 @@ TMP_FOLDER="./tmp";
 
 RELEASE_FOLDER="./release";
 
+n=1
 echo "Begin building app...";
 
-echo "\nStep 0: Prepare build process..."
+echo "\nStep $n: Prepare build process..."
 # Create tmp-directory
 if [ ! -d $TMP_FOLDER ]; then
     echo "making tmp-folder..."
@@ -26,25 +27,41 @@ else
     rm $RELEASE_FOLDER/*
 fi
 
+n=$((n+1))
+
+echo "\nStep $n: Validating html..." &&
+npx html-validate index.html &&
+echo "Ok!" &&
+
+n=$((n+1))
+
 # compile
-echo "\nStep 1: Copying html & css..." &&
+echo "\nStep $n: Copying html & css..." &&
 cp -v $SOURCE_HTML $RELEASE_FOLDER &&
 cp -v $SOURCE_CSS $RELEASE_FOLDER &&
 cp -v $SOURCE_AUDIO/*.ogg $RELEASE_FOLDER &&
 
-echo "\nStep 2: Compiling TS (according to tsconfig)..." &&
+n=$((n+1))
+
+echo "\nStep $n: Compiling TS (according to tsconfig)..." &&
 npx tsc &&
 echo "done..." &&
 
-echo "\nStep 3: Bundling up modules..." &&
+n=$((n+1))
+
+echo "\nStep $n: Bundling up modules..." &&
 npx browserify -o $TMP_FOLDER/app.js $TMP_FOLDER/index.js &&
 echo "done..." &&
 
-echo "\nStep 4: Minify..." &&
+n=$((n+1))
+
+echo "\nStep $n: Minify..." &&
 npx terser --mangle --compress --output $TMP_FOLDER/app.min.js $TMP_FOLDER/app.js &&
 echo "done..." &&
 
-echo "\nStep 5: Copying code..."
+n=$((n+1))
+
+echo "\nStep $n: Copying code..."
 cp -v $TMP_FOLDER/app.min.js $RELEASE_FOLDER &&
 echo "Done building app\n"
 

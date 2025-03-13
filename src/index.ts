@@ -211,9 +211,11 @@ async function wrap() {
   const adjustStyles = (): void => {
     console.log("Resizing Settings Panel");
     $("#settings")
-      // @ts-ignore
-      .css("height", $(window).height() - 75 + "px")
-      .css("right", "-250px");
+      .css({
+        "height": $(window).height() - 75 + "px",
+        "right": "-250px"
+      });
+
 
     $("#settings_filler").css("right", "-250px");
 
@@ -229,39 +231,39 @@ async function wrap() {
     }
   });
 
-  $("#read_number").on("change", (e) => {
+  $("#read_number").on("input", (e) => {
     const checked = $(e.target).is(":checked");
     state.readNumber = checked;
     Utils.saveData(storageKeys.readNumber, checked);
   });
 
-  $("#play_audio").on("change", (e) => {
+  $("#play_audio").on("input", (e) => {
     const checked = $(e.target).is(":checked");
     state.playAudio = checked;
     Utils.saveData(storageKeys.playAudio, checked);
   });
 
-  $("#timer_duration").on("change", (e) => {
+  $("#timer_duration").on("input", (e) => {
     const target = $(e.target);
     const value = parseInt(target.prop("value"), 10);
     if (!isNaN(value)) {
       state.timerDuration = value;
+      target.removeClass("invalid_input");
       Utils.saveData(storageKeys.timerDuration, value);
     } else {
       target.addClass("invalid_input");
     }
   });
 
-  $("#select_divider").on("change", (e) => {
+  $("#select_divider").on("input", (e) => {
     const target = $(e.target);
     const value = target.prop("value");
     if (value === "custom") {
-      $("#custom_divider, label[for='custom_divider']").css(
-        "display",
-        "inline"
-      );
+      $("#custom_divider, label[for='custom_divider']")
+        .css("display", "inline");
     } else {
-      $("#custom_divider, label[for='custom_divider']").css("display", "none");
+      $("#custom_divider, label[for='custom_divider']")
+        .css("display", "none");
       state.divider = value;
       Utils.saveData(storageKeys.divider, value);
     }

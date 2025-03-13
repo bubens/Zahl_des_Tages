@@ -308,7 +308,13 @@ async function wrap() {
   $(window).on("resize", adjustStyles);
 
   $(document).on("keyup touchend", (event) => {
-    if (state.running === false && event.which === 32) {
+    if (!state.running && event.which === 32) {
+      event.preventDefault();
+      roll(event);
+    }
+  });
+  $("#number").on("click", (event) => {
+    if (!state.running) {
       event.preventDefault();
       roll(event);
     }

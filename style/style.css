@@ -51,7 +51,9 @@ h1 {
 	width: 100%;
 	font-size: 120px;
 	text-align: center;
-
+	background-color: var(--dark-color);
+	color: var(--light-color);
+	border: none;
 }
 
 #timer {

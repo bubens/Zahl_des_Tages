@@ -1,5 +1,5 @@
 import * as $ from "jquery";
-import * as audioTrigger from "./audioTrigger";
+import * as Audio from "./audioTrigger";
 import * as Timer from "./timer";
 import * as Random from "./elmishRandom";
 import * as Utils from "./utils";
@@ -16,7 +16,7 @@ interface State {
   divider: string
 }
 
-interface GeneratorOutput {
+interface Number {
   number: number,
   string: string
 }
@@ -24,12 +24,12 @@ interface GeneratorOutput {
 async function wrap() {
 
   const storageKeys = {
-    minimum: "RANGE_MINIMUM",
-    maximum: "RANGE_MAXIMUM",
-    readNumber: "READ_NUMBER",
-    playAudio: "PLAY_AUDIO",
-    timerDuration: "DURATION_TIMER",
-    divider: "DIVIDER_SYMBOL",
+    minimum: "ZDT_RANGE_MINIMUM",
+    maximum: "ZDT_RANGE_MAXIMUM",
+    readNumber: "ZDT_READ_NUMBER",
+    playAudio: "ZDT_PLAY_AUDIO",
+    timerDuration: "ZDT_DURATION_TIMER",
+    divider: "ZDT_DIVIDER_SYMBOL",
   };
 
   const URLs = {
@@ -41,12 +41,12 @@ async function wrap() {
   const state: State = {
     running: false,
     timerRunning: false,
-    timerDuration: Utils.loadData(storageKeys.timerDuration, 120),
-    minimum: Utils.loadData(storageKeys.minimum, 1000),
-    maximum: Utils.loadData(storageKeys.maximum, 100000),
-    readNumber: Utils.loadData(storageKeys.readNumber, true),
-    playAudio: Utils.loadData(storageKeys.playAudio, true),
-    divider: Utils.loadData(storageKeys.divider, "."),
+    timerDuration: Utils.loadData<number>(storageKeys.timerDuration, 120),
+    minimum: Utils.loadData<number>(storageKeys.minimum, 1000),
+    maximum: Utils.loadData<number>(storageKeys.maximum, 100000),
+    readNumber: Utils.loadData<boolean>(storageKeys.readNumber, true),
+    playAudio: Utils.loadData<boolean>(storageKeys.playAudio, true),
+    divider: Utils.loadData<string>(storageKeys.divider, "."),
   };
 
   const display = $("#number");
@@ -57,7 +57,7 @@ async function wrap() {
 
 
 
-  const buildGenerator = ({ minimum, maximum }: State): Random.Generator<GeneratorOutput> => {
+  const buildGenerator = ({ minimum, maximum }: State): Random.Generator<Number> => {
     const padding = (maximum + "").length;
     return Random.int(minimum, maximum, Math.random).map((x) => {
       let arr = (x + "").split("").reverse();
@@ -85,22 +85,22 @@ async function wrap() {
   });
 
   /* AUDIO */
-  let gongSound = await audioTrigger.create(URLs.audioGong);
-  let clickSound = await audioTrigger.create(URLs.audioClick);
-  let timerSound = await audioTrigger.create(URLs.audioTimer);
+  let gongSound = await Audio.create(URLs.audioGong);
+  let clickSound = await Audio.create(URLs.audioClick);
+  let timerSound = await Audio.create(URLs.audioTimer);
 
   /* AUDIO END */
 
   const roll = (event) => {
-    const rndGenerator = buildGenerator(state);
+    const randomGenerator = buildGenerator(state);
 
     display.removeClass("ready").addClass("rolling");
-    print(rndGenerator.next().string);
+    print(randomGenerator.next().string);
 
 
     timeouts.forEach((t) => {
       window.setTimeout(() => {
-        const x = rndGenerator.next();
+        const x = randomGenerator.next();
         clickSound.trigger(state.playAudio);
         //console.log(x);
         print(x.string);
@@ -109,7 +109,7 @@ async function wrap() {
     state.running = true;
 
     setTimeout(() => {
-      const finalNumber = rndGenerator.next();
+      const finalNumber = randomGenerator.next();
       display.addClass("ready").removeClass("rolling");
       print(finalNumber.string);
 

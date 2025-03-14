@@ -3,6 +3,7 @@ import * as audioTrigger from "./audioTrigger";
 import * as Timer from "./timer";
 import * as Random from "./elmishRandom";
 import * as Utils from "./utils";
+import * as Voice from "./voice";
 
 interface State {
   running: boolean,
@@ -54,8 +55,7 @@ async function wrap() {
     return true;
   })(display);
 
-  const synth = window.speechSynthesis;
-  const voice = synth.getVoices().filter((v) => v.lang === "de-DE")[0];
+
 
   const buildGenerator = ({ minimum, maximum }: State): Random.Generator<GeneratorOutput> => {
     const padding = (maximum + "").length;
@@ -115,17 +115,11 @@ async function wrap() {
 
       gongSound.trigger(state.playAudio);
 
-      if (state.readNumber) {
-        const spokenNumber = new SpeechSynthesisUtterance(finalNumber.number + "");
-        spokenNumber.voice = voice;
+      if (state.readNumber && Voice.isAvailable) {
         window.setTimeout(
-          () => synth.speak(spokenNumber),
+          () => Voice.speak(finalNumber.number + "", () => startTimer()),
           gongSound.audioBuffer.duration * 1000
         );
-        spokenNumber.addEventListener("end", () => {
-          startTimer();
-          //state.running = false;
-        });
       } else {
         startTimer();
         //state.running = false;
@@ -170,8 +164,8 @@ async function wrap() {
       return NaN;
     }
   };
-  const checkRange = () => {
 
+  const checkRange = () => {
     const minimum = numberize($("#range_from").val());
     const maximum = numberize($("#range_to").val());
 
@@ -302,6 +296,10 @@ async function wrap() {
       toggleSettings(false);
     } else {
       toggleSettings(true);
+    }
+
+    if (!Voice.isAvailable) {
+      $("#read_number").attr("disabled", "disabled").prop("checked", false);
     }
   });
 

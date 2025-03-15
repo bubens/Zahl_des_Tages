@@ -33,9 +33,9 @@ async function wrap() {
   };
 
   const URLs = {
-    audioClick: "./Click.ogg",
-    audioGong: "./Number_found.ogg",
-    audioTimer: "./Timer_over.ogg",
+    audioClick: "./Click.mp3",
+    audioGong: "./Number_found.mp3",
+    audioTimer: "./Timer_over.mp3",
   };
 
   const state: State = {
@@ -117,7 +117,7 @@ async function wrap() {
 
       if (state.readNumber && Voice.isAvailable) {
         window.setTimeout(
-          () => Voice.speak(finalNumber.number + "", () => startTimer()),
+          () => Voice.speak(finalNumber.number + "", startTimer),
           gongSound.audioBuffer.duration * 1000
         );
       } else {

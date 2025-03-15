@@ -39,7 +39,7 @@ n=$((n+1))
 echo "\nStep $n: Copying html & css..." &&
 cp -v $SOURCE_HTML $RELEASE_FOLDER &&
 cp -v $SOURCE_CSS $RELEASE_FOLDER &&
-cp -v $SOURCE_AUDIO/*.ogg $RELEASE_FOLDER &&
+cp -v $SOURCE_AUDIO/*.mp3 $RELEASE_FOLDER &&
 
 n=$((n+1))
 

@@ -78,7 +78,7 @@ async function wrap() {
   //const timeouts = [100, 200];
 
   const timer = Timer.create("#timer", {
-    size: 360,
+    size: $("#timer").innerHeight(),
     color: "#FFA07A ",
     background: "#292929",
     border: "#FF4500 ",
@@ -94,7 +94,7 @@ async function wrap() {
   const roll = (event) => {
     const randomGenerator = buildGenerator(state);
 
-    display.removeClass("ready").addClass("rolling");
+    display.removeClass("ready initial").addClass("rolling");
     print(randomGenerator.next().string);
 
 

@@ -1,6 +1,12 @@
 * {
 	padding: 0;
 	margin: 0;
+}
+
+body {
+	background-color: var(--dark-color);
+	color: var(--light-color);
+	overflow: hidden;
 	--dark-color: #1C1C1C;
 	--lighter-dark-color: #292929;
 	--light-color: #30BAFF;
@@ -9,17 +15,6 @@
 	--dark-red-color: #d94365;
 	--light-orange: #FFA07A;
 	--dark-orange: #FF4500;
-}
-
-body {
-	background-color: var(--dark-color);
-	color: var(--light-color);
-	overflow: hidden;
-}
-
-h1 {
-	margin: 30px;
-	font-size: 400%;
 }
 
 .victor-mono {
@@ -35,31 +30,47 @@ h1 {
 	font-style: normal;
 }
 
-.ready {
-	border: #000 20px;
-	background-color: var(--light-color);
-	color: var(--dark-color);
+header {
+	height: 15vh;
 }
 
-.rolling {
-	border: none;
-	background-color: var(--dark-color);
-	color: var(--light-color);
+h1 {
+	margin: 2vh;
+	font-size: 11vh;
+}
+
+main {
+	height: 85vh;
+
 }
 
 #number {
 	width: 100%;
-	font-size: 120px;
+	height: 50%;
+	font-size: 30vh;
 	text-align: center;
+	border: none;
+	text-shadow: 4px 3px var(--light-color-transparent);
+}
+
+.initial:hover {
+	text-shadow: 5px 5px #f6665d !important;
+}
+
+.rolling {
 	background-color: var(--dark-color);
 	color: var(--light-color);
-	border: none;
+}
+
+.ready {
+	background-color: var(--light-color);
+	color: var(--dark-color);
 }
 
 #timer {
+
+	height: 50%;
 	margin: auto;
-	height: 360px;
-	padding: 30px;
 }
 
 #timer canvas {

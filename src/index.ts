@@ -49,34 +49,51 @@ async function wrap() {
     divider: Utils.loadData<string>(storageKeys.divider, "."),
   };
 
-  const display = $("#number");
-  const print = ((obj: JQuery<HTMLElement>) => (text: string): boolean => {
-    obj.text(text);
-    return true;
-  })(display);
 
+  // How to show the number
+  const display = (() => {
+    const element = $("#number");
+    const show = (text: string): boolean => {
+      element.empty().text(text);
+      return true;
+    };
+    return { element, show };
+  })();
 
-
-  const buildGenerator = ({ minimum, maximum }: State): Random.Generator<Number> => {
-    const padding = (maximum + "").length;
-    return Random.int(minimum, maximum, Math.random).map((x) => {
-      let arr = (x + "").split("").reverse();
-      for (let i = 0; i < arr.length; i += 3) {
-        arr[i] = i > 0 ? arr[i] + state.divider : arr[i];
-      }
-      return {
-        number: x,
-        string: arr.reverse().join("").padStart(padding, " "),
-      };
-    });
+  const insertDividers = (x: number): string => {
+    const arr = (x + "").split("");
+    const l = arr.length;
+    // It works, I think I can explain it, but I want it gone...
+    return arr.reduceRight((a, c, i) =>
+      (l - i - 1) % 3 === 0 && l - 1 !== i
+        ? c + state.divider + a
+        : c + a, ""
+    );
   };
 
+  // construct a generator for the rnd-numbers
+  const buildGenerator = ({ minimum, maximum }: State): Random.Generator<Number> => {
+    const padding = (maximum + "").length;
+    const generator =
+      Random.int(minimum, maximum)
+        .map(x => {
+          return {
+            string: insertDividers(x),
+            number: x
+          }
+        });
+
+    return generator;
+  };
+
+
+  // list of timeouts for the rolling animation
   const timeouts: number[] = [
     10, 20, 30, 40, 50, 80, 100, 130, 160, 210, 260, 310, 390, 470, 550, 650,
     750, 850, 1000, 1150, 1300, 1600, 1900, 2200, 2700, 3200, 3700, 4500,
   ];
-  //const timeouts = [100, 200];
 
+  // consult timer.ts
   const timer = Timer.create("#timer", {
     size: $("#timer").innerHeight(),
     color: "#FFA07A ",
@@ -89,13 +106,14 @@ async function wrap() {
   let clickSound = await Audio.create(URLs.audioClick);
   let timerSound = await Audio.create(URLs.audioTimer);
 
-  /* AUDIO END */
 
   const roll = (event) => {
     const randomGenerator = buildGenerator(state);
 
-    display.removeClass("ready initial").addClass("rolling");
-    print(randomGenerator.next().string);
+    adjustFontSize(insertDividers(state.maximum));
+
+    display.element.removeClass("ready initial").addClass("rolling");
+    display.show(randomGenerator.next().string);
 
 
     timeouts.forEach((t) => {
@@ -103,15 +121,15 @@ async function wrap() {
         const x = randomGenerator.next();
         clickSound.trigger(state.playAudio);
         //console.log(x);
-        print(x.string);
+        display.show(x.string);
       }, t);
     });
     state.running = true;
 
     setTimeout(() => {
       const finalNumber = randomGenerator.next();
-      display.addClass("ready").removeClass("rolling");
-      print(finalNumber.string);
+      display.element.addClass("ready").removeClass("rolling");
+      display.show(finalNumber.string);
 
       gongSound.trigger(state.playAudio);
 
@@ -176,6 +194,28 @@ async function wrap() {
     }
   };
 
+  const adjustFontSize = (testCase?: string): void => {
+    const number = document.getElementById("number");
+    const currentText = number.innerHTML;
+    let fontSize = parseInt(number.style.fontSize || getComputedStyle(number).getPropertyValue("font-size"), 10);
+
+    console.log(number.scrollWidth + "; " + number.clientWidth);
+    number.innerHTML = testCase || currentText;
+    if (number.scrollWidth > number.clientWidth) {
+      while (number.scrollWidth > number.clientWidth) {
+        fontSize -= 5;
+        number.style.fontSize = fontSize + "px";
+      }
+    }
+    else {
+      const copy = document.createElement("div");
+      copy.id = "numberCopy";
+      const defaultFontSize = getComputedStyle(copy).getPropertyValue("font-size");
+      number.style.fontSize = defaultFontSize;
+    }
+    number.innerHTML = currentText;
+  };
+
   const toggleSettings = (onscreen: boolean): boolean => {
     if (onscreen && checkRange()) {
       $("#range_from, #range_to").removeClass("invalid_input");
@@ -203,7 +243,6 @@ async function wrap() {
   };
 
   const adjustStyles = (): void => {
-    console.log("Resizing Settings Panel");
     $("#settings")
       .css({
         "height": $(window).height() - 75 + "px",
@@ -212,10 +251,9 @@ async function wrap() {
 
 
     $("#settings_filler").css("right", "-250px");
-
     $("#settings_toggle").css("right", "-3px");
 
-    //const timerHeight = $("#number").css("top"
+    adjustFontSize();
   };
 
   $("#settings_toggle").on("click", (e) => {
@@ -271,18 +309,22 @@ async function wrap() {
 
   $(() => {
     adjustStyles();
+    adjustFontSize();
 
     $("#settings, #settings_filler, #settings_toggle").css("display", "inline");
 
-    $("#range_from").val(state.minimum);
-    $("#range_to").val(state.maximum);
+    // show setting
+    $("#range_from").val(state.minimum + "");
+    $("#range_to").val(state.maximum + "");
+    $("#timer_duration").val(state.timerDuration + "");
+    $("#play_audio").prop("checked", state.playAudio);
+    $("#read_number").prop("checked", state.readNumber);
+
+
 
     if (![".", ",", " ", ""].includes(state.divider)) {
       $("#custom_divider").val(state.divider);
-      $("#custom_divider, label[for='custom_divider']").css(
-        "display",
-        "inline"
-      );
+      $("#custom_divider, label[for='custom_divider']").css("display", "inline");
       $("#select_divider").val("custom");
     } else {
       $("#custom_divider, label[for='custom_divider']").css("display", "none");
@@ -303,7 +345,7 @@ async function wrap() {
     }
   });
 
-  $(window).on("resize", adjustStyles);
+  $(window).on("resize orientationchange", adjustStyles);
 
   $(document).on("keyup touchend", (event) => {
     if (!state.running && event.which === 32) {

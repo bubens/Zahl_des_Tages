@@ -44,10 +44,14 @@ main {
 
 }
 
-#number {
+#number,
+#numberCopy {
 	width: 100%;
 	height: 50%;
+	display: flex;
 	font-size: 30vh;
+	justify-content: center;
+	align-items: center;
 	text-align: center;
 	border: none;
 	text-shadow: 4px 3px var(--light-color-transparent);

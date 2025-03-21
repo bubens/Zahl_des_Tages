@@ -158,16 +158,6 @@ async function wrap() {
     //console.log(timer);
   };
 
-  const saveRange = (minimum: number, maximum: number): boolean => {
-    Utils.saveData(storageKeys.minimum, minimum);
-    Utils.saveData(storageKeys.maximum, maximum);
-
-    state.minimum = minimum;
-    state.maximum = maximum;
-
-    return true;
-  };
-
   const numberize = <A>(value: A | A[]): number => {
     if (Array.isArray(value)) {
       return numberize(value[0]);
@@ -180,17 +170,6 @@ async function wrap() {
     }
     else {
       return NaN;
-    }
-  };
-
-  const checkRange = () => {
-    const minimum = numberize($("#range_from").val());
-    const maximum = numberize($("#range_to").val());
-
-    if (!isNaN(minimum) && !isNaN(maximum) && minimum < maximum) {
-      return saveRange(minimum, maximum);
-    } else {
-      return false;
     }
   };
 
@@ -216,50 +195,45 @@ async function wrap() {
     number.innerHTML = currentText;
   };
 
-  const toggleSettings = (onscreen: boolean): boolean => {
-    if (onscreen && checkRange()) {
-      $("#range_from, #range_to").removeClass("invalid_input");
-      $("#settings, #settings_filler, #settings_toggle").animate(
-        {
-          right: "-=250px",
-          opacity: 1,
-        },
-        { duration: 600, easing: "swing" }
-      );
-    } else if (checkRange()) {
-      $("#range_from, #range_to").removeClass("invalid_input");
-      $("#settings, #settings_filler, #settings_toggle").animate(
-        {
-          right: "+=250px",
-          opacity: 1,
-        },
-        { duration: 600 }
-      );
-    } else {
-      $("#range_from, #range_to").addClass("invalid_input");
-      return false;
-    }
-    return true;
-  };
-
   const adjustStyles = (): void => {
-    $("#settings")
-      .css({
-        "height": $(window).height() - 75 + "px",
-        "right": "-250px"
-      });
-
-
-    $("#settings_filler").css("right", "-250px");
-    $("#settings_toggle").css("right", "-3px");
-
     adjustFontSize();
   };
 
   $("#settings_toggle").on("click", (e) => {
-    const onscreen = $(e.currentTarget).data("onscreen");
-    if (toggleSettings(onscreen)) {
-      $(e.currentTarget).data("onscreen", !onscreen);
+    const footer = $("footer");
+    const className = "settings_shown";
+    e.preventDefault();
+    if (footer.hasClass(className)) {
+      footer.removeClass(className);
+    }
+    else {
+      footer.addClass(className);
+    }
+  });
+
+  $("#range_from").on("input", (e) => {
+    const input = $(e.target);
+    const value = numberize(input.val());
+    if (isNaN(value) || value >= state.maximum) {
+      input.addClass("invalid_input");
+    }
+    else {
+      input.removeClass("invalid_input");
+      Utils.saveData(storageKeys.minimum, value);
+      state.minimum = value;
+    }
+  });
+
+  $("#range_to").on("input", (e) => {
+    const input = $(e.target);
+    const value = numberize(input.val());
+    if (isNaN(value) || value <= state.minimum) {
+      input.addClass("invalid_input");
+    }
+    else {
+      input.removeClass("invalid_input");
+      Utils.saveData(storageKeys.maximum, value);
+      state.maximum = value;
     }
   });
 
@@ -311,7 +285,6 @@ async function wrap() {
     adjustStyles();
     adjustFontSize();
 
-    $("#settings, #settings_filler, #settings_toggle").css("display", "inline");
 
     // show setting
     $("#range_from").val(state.minimum + "");
@@ -329,15 +302,6 @@ async function wrap() {
     } else {
       $("#custom_divider, label[for='custom_divider']").css("display", "none");
       $("#select_divider").val(state.divider);
-    }
-
-    // Toggle Settings
-    if ($("#settings_toggle").data()["onscreen"] === undefined) {
-      $("#settings_toggle").data("onscreen", false);
-    } else if ($("#settings_toggle").data()["onscreen"]) {
-      toggleSettings(false);
-    } else {
-      toggleSettings(true);
     }
 
     if (!Voice.isAvailable) {

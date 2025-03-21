@@ -81,11 +81,25 @@ main {
 	height: 36vh;
 }
 
+footer {
+	height: 100vh;
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	transform: translate(250px);
+	transition: transform .5s ease-in;
+}
+
+.settings_shown {
+	transform: translate(-0px);
+	transition: transform .5s ease-out;
+}
+
 #settings_toggle {
 	font-size: 35px;
 	width: 45px;
-	height: 45px;
-	position: fixed;
+	height: 8vh;
+	position: absolute;
 	bottom: 0px;
 	right: 247px;
 	text-align: center;
@@ -96,7 +110,6 @@ main {
 	border-top-left-radius: 15px;
 	border-bottom-left-radius: 15px;
 	z-index: 999;
-	display: none;
 }
 
 #settings_toggle a {
@@ -116,10 +129,9 @@ main {
 	position: absolute;
 	top: 0px;
 	right: 0px;
-	height: 90%;
+	height: 92vh;
 	padding: 25px 0 0 25px;
 	line-height: 35px;
-	display: none;
 }
 
 #settings h2 {
@@ -148,11 +160,10 @@ select {
 	position: absolute;
 	bottom: 0px;
 	right: 0px;
-	height: 50px;
+	height: 8vh;
 	border-bottom: var(--light-color) 3px solid;
 	background: var(--lighter-dark-color);
 	z-index: -999;
-	display: none;
 }
 
 

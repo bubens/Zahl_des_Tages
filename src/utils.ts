@@ -33,3 +33,23 @@ export const loadData = <A>(key: string, defaultValue: A): A => {
         }
     }
 };
+
+export const safeQuerySelector = <A>(selector: string): A => {
+    const element = document.querySelector(selector);
+    if (element === null) {
+        throw new Error("No matching element to selector: " + selector);
+    }
+    else {
+        return <A>element;
+    }
+};
+
+export const safeQuerySelectorAll = (selector: string) => {
+    const element = document.querySelectorAll(selector);
+    if (element === null) {
+        throw new Error("No matching element to selector: " + selector);
+    }
+    else {
+        return element;
+    }
+};

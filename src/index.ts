@@ -1,9 +1,11 @@
-import * as $ from "jquery";
 import * as Audio from "./audioTrigger";
 import * as Timer from "./timer";
 import * as Random from "./elmishRandom";
 import * as Utils from "./utils";
 import * as Voice from "./voice";
+
+const $ = Utils.safeQuerySelector;
+const $$ = Utils.safeQuerySelectorAll;
 
 interface State {
   running: boolean,
@@ -52,9 +54,9 @@ async function wrap() {
 
   // How to show the number
   const display = (() => {
-    const element = $("#number");
+    const element = $<HTMLElement>("#number");
     const show = (text: string): boolean => {
-      element.empty().text(text);
+      element.innerHTML = text;
       return true;
     };
     return { element, show };
@@ -95,7 +97,7 @@ async function wrap() {
 
   // consult timer.ts
   const timer = Timer.create("#timer", {
-    size: $("#timer").innerHeight(),
+    size: 1000,
     color: "#FFA07A ",
     background: "#292929",
     border: "#FF4500 ",
@@ -112,7 +114,8 @@ async function wrap() {
 
     adjustFontSize(insertDividers(state.maximum));
 
-    display.element.removeClass("ready initial").addClass("rolling");
+    display.element.classList.remove("ready", "initial")
+    display.element.classList.add("rolling");
     display.show(randomGenerator.next().string);
 
 
@@ -128,7 +131,7 @@ async function wrap() {
 
     setTimeout(() => {
       const finalNumber = randomGenerator.next();
-      display.element.addClass("ready").removeClass("rolling");
+      display.element.classList.replace("rolling", "ready");
       display.show(finalNumber.string);
 
       gongSound.trigger(state.playAudio);
@@ -145,16 +148,15 @@ async function wrap() {
     }, timeouts[timeouts.length - 1] + 1000);
   };
 
-  const startTimer = () =>
-    $("#timer canvas").fadeIn(800, () => {
-      timer.start(state.timerDuration * 1000, timerDone);
-    });
+  const startTimer = () => {
+    $<HTMLElement>("#timer canvas").style.display = "inline";
+    timer.start(state.timerDuration * 1000, timerDone);
+  };
 
   const timerDone = () => {
     timerSound.trigger(state.playAudio);
-    $("#timer canvas").fadeOut(600, () => {
-      state.running = false;
-    });
+    $<HTMLElement>("#timer canvas").style.display = "none";
+    state.running = false;
     //console.log(timer);
   };
 
@@ -199,125 +201,145 @@ async function wrap() {
     adjustFontSize();
   };
 
-  $("#settings_toggle").on("click", (e) => {
-    const footer = $("footer");
+  $<HTMLElement>("#settings_toggle").addEventListener("click", (e) => {
+    const footer = $<HTMLInputElement>("footer");
     const className = "settings_shown";
     e.preventDefault();
-    if (footer.hasClass(className)) {
-      footer.removeClass(className);
+    if (footer.classList.contains(className)) {
+      footer.classList.remove(className);
     }
     else {
-      footer.addClass(className);
+      footer.classList.add(className);
     }
   });
 
-  $("#range_from").on("input", (e) => {
-    const input = $(e.target);
-    const value = numberize(input.val());
+  $<HTMLElement>("#range_from").addEventListener("input", (e) => {
+    const input = <HTMLInputElement>e.target;
+    const value = numberize(input.value);
     if (isNaN(value) || value >= state.maximum) {
-      input.addClass("invalid_input");
+      input.classList.add("invalid_input");
     }
     else {
-      input.removeClass("invalid_input");
+      input.classList.remove("invalid_input");
       Utils.saveData(storageKeys.minimum, value);
       state.minimum = value;
     }
   });
 
-  $("#range_to").on("input", (e) => {
-    const input = $(e.target);
-    const value = numberize(input.val());
+  $<HTMLElement>("#range_to").addEventListener("input", (e) => {
+    const input = <HTMLInputElement>e.target;
+    const value = numberize(input.value);
     if (isNaN(value) || value <= state.minimum) {
-      input.addClass("invalid_input");
+      input.classList.add("invalid_input");
     }
     else {
-      input.removeClass("invalid_input");
+      input.classList.remove("invalid_input");
       Utils.saveData(storageKeys.maximum, value);
       state.maximum = value;
     }
   });
 
-  $("#read_number").on("input", (e) => {
-    const checked = $(e.target).is(":checked");
+  $<HTMLInputElement>("#read_number").addEventListener("input", (e) => {
+    const target = <HTMLInputElement>e.target;
+    const checked = target.checked;
     state.readNumber = checked;
     Utils.saveData(storageKeys.readNumber, checked);
   });
 
-  $("#play_audio").on("input", (e) => {
-    const checked = $(e.target).is(":checked");
+  $<HTMLInputElement>("#play_audio").addEventListener("input", (e) => {
+    const target = <HTMLInputElement>e.target;
+    const checked = target.checked;
     state.playAudio = checked;
     Utils.saveData(storageKeys.playAudio, checked);
   });
 
-  $("#timer_duration").on("input", (e) => {
-    const target = $(e.target);
-    const value = parseInt(target.prop("value"), 10);
+  $<HTMLInputElement>("#timer_duration").addEventListener("input", (e) => {
+    const target = <HTMLInputElement>e.target;
+    const value = parseInt(target.value, 10);
     if (!isNaN(value)) {
       state.timerDuration = value;
-      target.removeClass("invalid_input");
+      target.classList.remove("invalid_input");
       Utils.saveData(storageKeys.timerDuration, value);
     } else {
-      target.addClass("invalid_input");
+      target.classList.add("invalid_input");
     }
   });
 
-  $("#select_divider").on("input", (e) => {
-    const target = $(e.target);
-    const value = target.prop("value");
+  $<HTMLInputElement>("#select_divider").addEventListener("input", (e) => {
+    const target = <HTMLInputElement>e.target;
+    const value = target.value;
     if (value === "custom") {
-      $("#custom_divider, label[for='custom_divider']")
-        .css("display", "inline");
+      $$("#custom_divider, label[for='custom_divider']")
+        .forEach(elm => {
+          const element = <HTMLElement>elm;
+          element.style.display = "inline";
+        });
     } else {
-      $("#custom_divider, label[for='custom_divider']")
-        .css("display", "none");
+      $$("#custom_divider, label[for='custom_divider']")
+        .forEach(elm => {
+          const element = <HTMLElement>elm;
+          element.style.display = "none";
+        });
       state.divider = value;
       Utils.saveData(storageKeys.divider, value);
     }
   });
 
-  $("#custom_divider").on("input", (e) => {
-    const value = $(e.target).prop("value");
+  $<HTMLInputElement>("#custom_divider").addEventListener("input", (e) => {
+    const target = <HTMLInputElement>e.target;
+    const value = target.value;
     state.divider = value;
     Utils.saveData(storageKeys.divider, value);
   });
 
-  $(() => {
+  document.addEventListener("load", () => {
     adjustStyles();
     adjustFontSize();
 
 
     // show setting
-    $("#range_from").val(state.minimum + "");
-    $("#range_to").val(state.maximum + "");
-    $("#timer_duration").val(state.timerDuration + "");
-    $("#play_audio").prop("checked", state.playAudio);
-    $("#read_number").prop("checked", state.readNumber);
+    $<HTMLInputElement>("#range_from").value = state.minimum + "";
+    $<HTMLInputElement>("#range_to").value = state.maximum + "";
+    $<HTMLInputElement>("#timer_duration").value = state.timerDuration + "";
+    $<HTMLInputElement>("#play_audio").checked = state.playAudio;
+    $<HTMLInputElement>("#read_number").checked = state.readNumber;
 
 
 
     if (![".", ",", " ", ""].includes(state.divider)) {
-      $("#custom_divider").val(state.divider);
-      $("#custom_divider, label[for='custom_divider']").css("display", "inline");
-      $("#select_divider").val("custom");
+      $<HTMLInputElement>("#custom_divider").value = state.divider;
+      $$("#custom_divider, label[for='custom_divider']")
+        .forEach(elm => {
+          const element = <HTMLElement>elm;
+          element.style.display = "inline";
+        });
+      $<HTMLInputElement>("#select_divider").value = "custom";
     } else {
-      $("#custom_divider, label[for='custom_divider']").css("display", "none");
-      $("#select_divider").val(state.divider);
+      $$("#custom_divider, label[for='custom_divider']")
+        .forEach(elm => {
+          const element = <HTMLInputElement>elm;
+          element.style.display = "none";
+        });
+      $<HTMLInputElement>("#select_divider").value = state.divider;
     }
 
     if (!Voice.isAvailable) {
-      $("#read_number").attr("disabled", "disabled").prop("checked", false);
+      const readNumber = $<HTMLInputElement>("#read_number");
+      readNumber.disabled = true;
+      readNumber.checked = false;
     }
   });
 
-  $(window).on("resize orientationchange", adjustStyles);
+  document.addEventListener("resize, orientationchange", adjustStyles);
 
-  $(document).on("keyup touchend", (event) => {
-    if (!state.running && event.which === 32) {
+  document.addEventListener("keyup, touchend", (event) => {
+    //@ts-ignore
+    if (!state.running && event.keyCode === 32) {
       event.preventDefault();
       roll(event);
     }
   });
-  $("#number").on("click", (event) => {
+  $<HTMLElement>("#number").addEventListener("click", (event) => {
     if (!state.running) {
       event.preventDefault();
       roll(event);

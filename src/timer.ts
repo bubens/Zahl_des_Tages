@@ -17,7 +17,7 @@ export const create = (elem: string, opts?: Options): Timer => {
     color: "#ff0000",
     background: "#8A8A8A",
     border: "#000",
-    size: 200,
+    size: 1000,
   };
 
   const options = opts === undefined
@@ -27,8 +27,6 @@ export const create = (elem: string, opts?: Options): Timer => {
   const canvas = document.createElement("canvas");
   canvas.width = options.size;
   canvas.height = options.size;
-  canvas.style.width = options.size + "px";
-  canvas.style.height = options.size + "px";
 
   const context = canvas.getContext("2d");
 
@@ -42,8 +40,6 @@ export const create = (elem: string, opts?: Options): Timer => {
     throw new Error("No element to selector '" + elem + "'");
   }
   else {
-    element.style.width = options.size + "px";
-    element.style.height = options.size + "px";
     element.innerHTML = "";
     element.appendChild(canvas);
   }

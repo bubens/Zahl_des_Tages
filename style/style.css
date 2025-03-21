@@ -41,13 +41,12 @@ h1 {
 
 main {
 	height: 85vh;
-
 }
 
 #number,
 #numberCopy {
 	width: 100%;
-	height: 50%;
+	height: 45vh;
 	display: flex;
 	font-size: 30vh;
 	justify-content: center;
@@ -72,13 +71,14 @@ main {
 }
 
 #timer {
-
-	height: 50%;
-	margin: auto;
+	height: 40vh;
+	padding: 1vh;
+	text-align: center;
 }
 
 #timer canvas {
 	display: none;
+	height: 36vh;
 }
 
 #settings_toggle {

@@ -115,6 +115,7 @@ footer {
 #settings_toggle a {
 	text-decoration: none;
 	color: var(--light-color);
+	font-size: 7vh;
 }
 
 #toggle_settings:hover {
@@ -131,7 +132,7 @@ footer {
 	right: 0px;
 	height: 92vh;
 	padding: 25px 0 0 25px;
-	line-height: 35px;
+	line-height: 1.5em;
 }
 
 #settings h2 {
@@ -149,6 +150,11 @@ select {
 	color: var(--light-color);
 	text-align: center;
 	font-variant: small-caps;
+}
+
+#settings h3 {
+	margin: 1.5em 0 7px;
+	border-bottom: 2px solid;
 }
 
 #settings #custom_divider {

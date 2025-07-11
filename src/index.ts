@@ -215,29 +215,32 @@ async function wrap() {
     }
   });
 
-  $<HTMLElement>("#range_from").addEventListener("input", (e) => {
-    const input = <HTMLInputElement>e.target;
-    const value = numberize(input.value);
-    if (isNaN(value) || value >= state.maximum) {
-      input.classList.add("invalid_input");
-    }
-    else {
-      input.classList.remove("invalid_input");
-      Utils.saveData(storageKeys.minimum, value);
-      state.minimum = value;
-    }
-  });
+  $<HTMLElement>("#range_from, #range_to").addEventListener("input", (e) => {
+    const inputMinimum = $<HTMLInputElement>("#range_from");
+    const inputMaximum = $<HTMLInputElement>("#range_to");
+    const minimumValue = numberize(inputMinimum.value);
+    const maximumValue = numberize(inputMaximum.value);
 
-  $<HTMLElement>("#range_to").addEventListener("input", (e) => {
-    const input = <HTMLInputElement>e.target;
-    const value = numberize(input.value);
-    if (isNaN(value) || value <= state.minimum) {
-      input.classList.add("invalid_input");
+    if (isNaN(minimumValue)) {
+      inputMinimum.classList.add("invalid_input");
+      return false;
+    }
+    if (isNaN(maximumValue)) {
+      inputMaximum.classList.add("invalid_input");
+      return false;
+    }
+
+    if (minimumValue >= maximumValue) {
+      inputMinimum.classList.add("invalid_input");
+      inputMaximum.classList.add("invalid_input");
     }
     else {
-      input.classList.remove("invalid_input");
-      Utils.saveData(storageKeys.maximum, value);
-      state.maximum = value;
+      inputMinimum.classList.remove("invalid_input");
+      inputMaximum.classList.remove("invalid_input");
+      Utils.saveData(storageKeys.minimum, minimumValue);
+      Utils.saveData(storageKeys.maximum, maximumValue);
+      state.minimum = minimumValue;
+      state.maximum = maximumValue;
     }
   });
 
